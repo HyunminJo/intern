@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Faq">
+
+    <sql id="selectFaqList">
+        content.content_no
+        , content.content_type
+        , content.parent_content_no
+        , content.reply_step
+        , content.use_yn
+        , content.disp_yn
+        , content.reg_no
+        , content.reg_dt
+        , content.mod_no
+        , content.mod_dt
+        , content.best_yn
+        , content.view_cnt
+        , content.vote_cnt
+        , content.content_group
+        , content.disp_no
+        , content.title
+        , content.content
+    </sql>
+    
+    <sql id="selectFaqCode">
+        code_group
+        , code
+        , disp_no
+        , use_yn
+        , reg_no
+        , reg_dt
+        , mod_no
+        , mod_dt
+        , content
+        , name
+    </sql>
+
+    <sql id="selectFaqSearchCondition">
+        <where>
+            <if test="(keyword == null or ''.equals(keyword)) and (contentGroup == null or ''.equals(contentGroup))">
+                <![CDATA[ROWNUM < 11]]>
+            </if>
+            <if test="keyword != null and !''.equals(keyword)">
+                AND (title like '%' ||  #{keyword} || '%' OR content like '%' || #{keyword} || '%')
+            </if>
+            <if test="contentGroup != null and !''.equals(contentGroup)">
+                AND content_group = #{contentGroup}
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectFaqCodeList" parameterType="Code"
+        resultType="Code">
+        /* Faq.selectFaqCode */
+        SELECT <include refid="selectFaqCode"/>
+          FROM code
+         WHERE use_yn = 'Y'
+      ORDER BY disp_no
+    </select>
+
+    <select id="selectFaqBestList" parameterType="Content"
+        resultType="Content">
+        /* Faq.selectFaqBestList */
+        SELECT <include refid="selectFaqList"/>
+          FROM( SELECT <include refid="selectFaqList"/> 
+                  FROM content
+                  JOIN code code ON (code = content_group)
+                 ORDER BY view_cnt DESC) content
+        <include refid="selectFaqSearchCondition"/>
+    </select>
+
+</mapper>

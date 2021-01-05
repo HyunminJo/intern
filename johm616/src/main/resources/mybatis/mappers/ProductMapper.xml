@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Product">
+
+    <sql id="selectProductCategory">
+        ctgr_Id
+        , prnt_Ctgr_Id
+        , ctgr_Name
+        , use_Yn
+        , disp_Order
+        , rgst_Dtm
+        , last_Mod_Admin_Id
+        , ctgr_Image_Url
+    </sql>
+
+    <sql id="selectBrandList">
+        brand_Id
+        , brand_Name
+        , brand_Eng_Name
+        , brand_Desc
+        , rgst_Dtm
+        , use_Yn
+        , last_Mod_Admin_Id
+        , last_Mod_Dtm
+        , prmm_Yn
+        , brand_Srch_Word
+        , brand_Itrdn_Info
+        , brand_Image_Url1
+        , brand_Image_Url2
+        , brand_Image_Url3
+        , brand_Image_Url4
+        , brand_Image_Url5
+        , brand_Image_Url6
+        , brand_Image_Url7
+        , brand_Image_Url8
+        , top_Vsl_Area
+        , itrst_Brand_Disp_Yn
+        , disp_Order
+    </sql>
+    
+    <sql id="selectProductList">
+        prd.prdt_code
+        , prd.vndr_cntrt_id
+        , prd.brand_id
+        , prd.prdt_eng_name
+        , prd.prdt_sell_price
+        , prd.prdt_stat_code
+        , prd.optn_name
+        , prd.erp_color_name
+        , prd.mnftr_name
+        , prd.coo_code
+        , prd.rgst_dtm
+        , prd.prdt_prmt_code
+        , prd.cntr_prdt_use_yn
+        , prd.free_gift_use_yn
+        , prd.last_mod_admin_id
+        , prd.last_mod_dtm
+        , prd.min_buy_count
+        , prd.max_buy_count
+        , prd.prdt_kor_name
+        , prd.disp_yn
+        , prd.srch_word
+        , prd.prdt_style
+        , prd.prdt_gbn_code
+        , prd.prmt_dtm
+        , prd.sell_count
+        , prd.free_dlvy_yn
+        , br.brand_name
+        , vndr_join_stat_code
+        , cntrt_start_dt
+        , cntrt_end_dt
+        , pri.prdt_image_path
+    </sql>
+
+    <!-- 브랜드 검색 조건 -->
+    <sql id="selectBrandSearchCondition">
+        <if test="brandName != null and !''.equals(brandName)">
+            AND brand_Name like '%' || #{brandName} || '%'
+        </if>
+        <if test="brandEngName != null and !''.equals(brandEngName)">
+            AND brand_Eng_Name like '%' || #{brandEngName} ||
+            '%'
+        </if>
+        <if test="brandId != null and !''.equals(brandId)">
+            AND brand_Id = #{brandId}
+        </if>
+    </sql>
+    
+    <!-- 관련상품 검색 조건 -->
+    <sql id="selectProductSearchCondition">
+        <where>
+            prdt_image_code = 7
+            AND prdt_prmt_code = 'P'
+            <if test="selectCategory != null and !''.equals(selectCategory) and !'00'.equals(selectCategory)">
+                AND ctgr_id in (SELECT ctgr_id
+                                  FROM tb_category
+                            START WITH ctgr_id = #{selectCategory}
+                            CONNECT BY prior ctgr_id = prnt_ctgr_id)
+            </if>
+            <if test="prdtEngName != null and !''.equals(prdtEngName)">
+                AND prdt_eng_name like '%' || #{prdtEngName} || '%'
+            </if>
+            <if test="vndrId != null and !''.equals(vndrId)">
+                AND venc.vndr_id = #{vndrId}
+            </if>
+            <if test="prdtCode != null and !''.equals(prdtCode)">
+                AND prd.prdt_code = #{prdtCode}
+            </if>
+            <if test="brandId != null and !''.equals(brandId)">
+                AND prd.brand_id = #{brandId}
+            </if>  
+            <if test="prdtStatCode != null and !''.equals(prdtStatCode)">
+                AND prd.prdt_stat_code in ${prdtStatCode}
+            </if>
+            <if test="dscntStartSellPrice != null and !''.equals(dscntStartSellPrice)">
+                <![CDATA[AND prd.prdt_sell_price >= #{dscntStartSellPrice}]]> 
+            </if>
+            <if test="dscntEndSellPrice != null and !''.equals(dscntEndSellPrice)">
+                <![CDATA[AND prd.prdt_sell_price <= #{dscntEndSellPrice}]]> 
+            </if>
+            <if test='dispYn != null and !"".equals(dispYn) and !"A".equals(dispYn)'>
+                AND prd.disp_yn = #{dispYn}
+            </if>
+            <if test="startDate != null and !''.equals(startDate)">
+                <![CDATA[AND prd.prmt_dtm >= to_date(#{startDate}, 'YYYY.MM.DD')]]> 
+            </if>
+            <if test="endDate != null and !''.equals(endDate)">
+                <![CDATA[AND prd.prmt_dtm <= to_date(#{endDate}, 'YYYY.MM.DD')]]> 
+            </if>
+            <if test="!vndrStopPrdtEscp">
+                AND ven.vndr_join_stat_code = '02' 
+                AND TO_CHAR(SYSDATE,'yyyyMMdd') BETWEEN venc.cntrt_start_dt AND venc.cntrt_end_dt 
+            </if>
+        </where>
+
+    </sql>
+    
+    <!-- 관련 상품 정렬 -->
+    <sql id="selectProductListOrder">
+        <if test="'orderByType1Asc'.equals(sortType)">
+            prdt_sell_price ASC
+        </if>
+        <if test="'orderByType1Desc'.equals(sortType)">
+            prdt_sell_price DESC
+        </if>
+        <if test="'orderByType2Asc'.equals(sortType)">
+            prd.prmt_dtm ASC
+        </if>
+        <if test="'orderByType2Desc'.equals(sortType)">
+            prd.prmt_dtm DESC
+        </if>
+        <if test="'orderByType3Asc'.equals(sortType)">
+            prd.prmt_dtm ASC
+        </if>
+        <if test="'orderByType3Desc'.equals(sortType)">
+            prd.prmt_dtm DESC
+        </if>
+        <if test="'orderByType4Asc'.equals(sortType)">
+            prdt_sell_price ASC
+        </if>
+        <if test="'orderByType4Desc'.equals(sortType)">
+            prdt_sell_price DESC
+        </if>
+        <if test="'orderByType5Asc'.equals(sortType)">
+            lave_count ASC
+        </if>
+        <if test="'orderByType5Desc'.equals(sortType)">
+            lave_count DESC
+        </if>
+        <if test="'orderByType6Asc'.equals(sortType)">
+            prd.prdt_stat_code ASC
+        </if>
+        <if test="'orderByType6Desc'.equals(sortType)">
+            prd.prdt_stat_code DESC
+        </if>
+        <if test="'orderByType7Asc'.equals(sortType)">
+            prd.disp_yn ASC
+        </if>
+        <if test="'orderByType7Desc'.equals(sortType)">
+            prd.disp_yn DESC
+        </if>
+        <if test="'orderByType8Asc'.equals(sortType)">
+            prd.prmt_dtm ASC
+        </if>
+        <if test="'orderByType8Desc'.equals(sortType)">
+            prd.prmt_dtm DESC
+        </if>
+        <if test="sortType == null ||''.equals(sortType)">
+            prd.prmt_dtm DESC
+        </if>
+    </sql>
+    
+    <!-- 상품 분류(하위) -->
+    <select id="getClassityCategoryList" parameterType="Category"
+        resultType="Category">
+        /* Product.getClassityCategoryList */
+        SELECT
+        <include refid="selectProductCategory" />
+          FROM TB_CATEGORY
+         WHERE PRNT_CTGR_ID = #{prntCtgrId}
+    </select>
+    
+    <!-- 브랜드 팝업 -->
+    <select id="getBrandList" parameterType="Brand"
+        resultType="Brand">
+        /* Product.getBrandList */
+        <include refid="Base.pageHeader" />
+        SELECT <include refid="selectBrandList" />
+          FROM TB_BRAND
+         WHERE 1=1
+        <include refid="selectBrandSearchCondition" />
+         ORDER BY BRAND_NAME
+        <include refid="Base.pageFooter" />
+    </select>
+
+    <select id="getBrandListCount" parameterType="Brand"
+        resultType="int">
+        /* Product.getBrandListCount */
+        SELECT COUNT(*)
+          FROM TB_BRAND
+        <include refid="selectBrandSearchCondition" />
+    </select>
+
+    <!-- 원산지 -->
+    <select id="getOriginList" resultType="OriginCode">
+        SELECT code_name AS codeName
+             , code_value AS codeValue
+             , code_order AS codeOrder
+          FROM Tb_Code
+         WHERE code_class = 'COO_CODE'
+           AND code_use_yn ='Y'
+         ORDER BY code_order ASC
+    </select>
+    
+    <!-- 상품 분류정보(상위) -->
+    <select id="getCategoryParentList" resultType="Category">
+        SELECT ctgr_id AS ctgrId
+             , prnt_ctgr_id AS prntCtgrId
+             , ctgr_name AS ctgrName
+             , disp_order AS dispOrder
+          FROM tb_category
+         WHERE prnt_ctgr_id = '00' 
+           AND use_yn='Y'
+         ORDER BY disp_order ASC
+    </select>
+
+    <!-- 관련상품 팝업 -->
+    <select id="getProductList" parameterType="Product"
+        resultType="Product">
+        /* Product.getProductList */
+        <include refid="Base.pageHeader" />
+        SELECT <include refid="selectProductList" />
+          , (SELECT (SELECT LISTAGG(ctgr_name, ' > ') WITHIN GROUP(ORDER BY LEVEL DESC)
+                FROM tb_category
+                WHERE prnt_ctgr_id IS NOT null
+                CONNECT BY PRIOR prnt_ctgr_id = CTGR_ID
+                START WITH CTGR_ID = pc.CTGR_ID)
+            FROM  tb_product p
+            INNER JOIN  tb_product_category pc ON p.prdt_code = pc.prdt_code
+            WHERE  p.prdt_code = PRD.prdt_code
+            AND  pc.std_ctgr_yn = 'Y') AS category, 
+           <![CDATA[ CASE WHEN 0<( SELECT  COUNT(*)  ]]>
+                     FROM tb_product_ftc_info FT
+                    WHERE ft.prdt_code = prd.prdt_code) THEN '등록'
+                                                       ELSE'미등록'
+                                                       END AS "ftcYn"
+           , sum(lave_count) AS lave_count                                                       
+        FROM tb_product prd
+        JOIN tb_brand br ON(prd.brand_id = br.brand_id)
+        LEFT JOIN tb_product_option pro ON(prd.prdt_code = pro.prdt_code)
+        LEFT JOIN tb_product_category ctg ON(prd.prdt_code = ctg.prdt_code)
+        JOIN tb_product_image PRI ON(prd.prdt_code = PRI.prdt_code)
+        JOIN tb_vendor_contract venc ON(prd.vndr_cntrt_id = venc.vndr_cntrt_id)
+        JOIN tb_vendor ven ON(venc.vndr_id = ven.vndr_id)
+        <include refid="selectProductSearchCondition" />
+         GROUP BY <include refid="selectProductList" />
+         ORDER BY <include refid="selectProductListOrder" />
+        <include refid="Base.pageFooter" />
+    </select>
+
+    <select id="getProductListCount" parameterType="Product"
+        resultType="int">
+        /* Product.getProductListCount */
+        SELECT COUNT(*)
+          FROM (SELECT <include refid="selectProductList" />
+              , (SELECT (SELECT LISTAGG(ctgr_name, ' > ') WITHIN GROUP(ORDER BY LEVEL DESC)
+                    FROM tb_category
+                    WHERE prnt_ctgr_id IS NOT null
+                    CONNECT BY PRIOR prnt_ctgr_id = CTGR_ID
+                    START WITH CTGR_ID = pc.CTGR_ID)
+                FROM  tb_product p
+                INNER JOIN  tb_product_category pc ON p.prdt_code = pc.prdt_code
+                WHERE  p.prdt_code = PRD.prdt_code
+                AND  pc.std_ctgr_yn = 'Y') AS category
+              , sum(lave_count) AS lave_count              
+            FROM tb_product prd
+            JOIN tb_brand br ON(prd.brand_id = br.brand_id)
+            LEFT JOIN tb_product_option pro ON(prd.prdt_code = pro.prdt_code)
+            LEFT JOIN tb_product_category ctg ON(prd.prdt_code = ctg.prdt_code)
+            JOIN tb_product_image PRI ON(prd.prdt_code = PRI.prdt_code)
+            JOIN tb_vendor_contract venc ON(prd.vndr_cntrt_id = venc.vndr_cntrt_id)
+            JOIN tb_vendor ven ON(venc.vndr_id = ven.vndr_id)
+            <include refid="selectProductSearchCondition" />
+            GROUP BY <include refid="selectProductList" />
+            )
+    </select>
+
+    <!-- selectOne -->    
+    <select id="selectOneProduct" resultType="String">
+        /*Product.selectOneProduct*/
+        SELECT LPAD(prdt_code_seq.NEXTVAL, 15, 0) prdt_code
+        FROM DUAL
+    </select>
+    
+    <!-- insertProduct -->
+    <insert id="insertProduct" parameterType="Product">
+        /*Product.insertProduct*/
+        INSERT INTO tb_product(prdt_code
+                       ,vndr_cntrt_id
+                       ,brand_id
+                       ,prdt_stat_code
+                       ,prdt_eng_name
+                       ,prdt_sell_price
+                       ,optn_name
+                       ,coo_code
+                       ,rgst_dtm
+                       ,prdt_prmt_code
+                       ,prdt_dtl_info
+                       ,cntr_prdt_use_yn
+                       ,last_mod_admin_id
+                       ,last_mod_dtm
+                       ,min_buy_count
+                       ,max_buy_count
+                       ,prdt_kor_name
+                       ,prmt_dtm
+                       ,mnftr_name
+                       ,free_gift_use_yn
+                       ,disp_yn
+                       ,sell_count
+                       ,free_dlvy_yn
+                       ,srch_word)
+                VALUES(#{prdtCode} 
+                        ,#{vndrCntrtId}
+                        ,#{brandId}
+                        ,#{prdtStatCode} 
+                        ,#{prdtEngName} 
+                        ,#{prdtSellPrice}
+                        ,#{optnName} 
+                        ,#{cooCode} 
+                        ,TO_DATE(#{rgstDtm}, 'yyyy-MM-dd HH24:mi:ss') 
+                        ,#{prdtPrmtCode} 
+                        ,#{prdtDtlInfo} 
+                        ,#{cntrPrdtUseYn} 
+                        ,#{lastModAdminId}
+                        ,TO_DATE(#{lastModDtm}, 'yyyy-MM-dd HH24:mi:ss') 
+                        ,#{minBuyCount} 
+                        ,#{maxBuyCount} 
+                        ,#{prdtKorName} 
+                        ,TO_DATE(#{prmtDtm}, 'yyyy-MM-dd HH24:mi:ss') 
+                        ,#{mnftrName}
+                        ,#{freeGiftUseYn}
+                        ,#{dispYn}
+                        ,#{sellCount}
+                        ,#{freeDlvyYn}
+                        ,#{srchWord}) 
+    </insert>
+    
+    <!-- insertConnectPrdt-->
+    <insert id="insertConnectPrdt"
+        parameterType="ConnectionProduct">
+        /* Product.insertConnectPrdt */
+        INSERT INTO
+        tb_connection_product (cntr_prdt_code, cntr_prdt_mstr_code)
+        VALUES(#{cntrPrdtCode}, #{cntrPrdtMstrCode})
+    </insert>
+    
+    <!-- insertCategory -->
+    <insert id="insertCategory" parameterType="ProductCategory">
+        /* Product.insertCategory */
+        INSERT INTO tb_product_category (prdt_code, ctgr_id, std_ctgr_yn)
+        VALUES(#{prdtCode}, #{ctgrId}, #{stdCtgrYn})
+    </insert>
+    
+    <!-- insertFtcInfo -->
+    <insert id="insertFtcInfo" parameterType="ProductFTCInfo">
+        /*
+        Product.insertFtcInfo */
+        INSERT INTO
+        tb_product_ftc_info
+        (prdt_code, ftc_info_seq, info_notc_cont, disp_yn, rgst_dtm,
+        admin_id)
+        VALUES(#{prdtCode}, #{ftcInfoSeq}, #{infoNotcCont},
+        #{dispYn},
+        TO_DATE(#{rgstDtm}, 'yyyy-MM-dd HH24:mi:ss'),
+        #{adminId})
+    </insert>
+    
+    <!-- insertIcon -->
+    <insert id="insertPrdtIcon" parameterType="ProductIcon">
+        /*Product.insertPrdtIcon*/
+        INSERT INTO tb_product_icon (prdt_code, icon_id)
+        VALUES(#{prdtCode}, #{iconId})
+    </insert>
+    
+    <!-- insertPrdtImg -->
+    <insert id="insertPrdtImg" parameterType="ProductImage">
+        /*Product.insertPrdtImg*/
+        INSERT INTO
+        tb_product_Image(prdt_code,prdt_image_code,prdt_image_path,rgst_dtm)
+        VALUES(#{prdtCode},#{prdtImageCode},#{prdtImagePath},TO_DATE(#{rgstDtm},
+        'yyyy-MM-dd HH24:mi:ss'))
+    </insert>
+    
+    <!-- insertPrdtPrice -->
+    <insert id="insertPrdtPrice" parameterType="ProductPrice">
+        /* Product.insertPrdtPrice*/
+        INSERT INTO tb_product_price
+        (prdt_price_seq, prdt_dscnt_price, dscnt_start_dt, dscnt_end_dt,
+        rgst_dtm, prdt_code)
+        VALUES(product_price_sq.nextVal, #{prdtDscntPrice},
+        #{dscntStartDt}, #{dscntEndDt}, TO_DATE(#{rgstDtm}, 'yyyy-MM-dd
+        HH24:mi:ss'), #{prdtCode})
+    </insert>
+    
+    <!-- insertPrdtSearchWord -->
+    <insert id="insertPrdtSearchWord" parameterType="ProductSearchWord">
+        /*Product.insertPrdtSearchWord*/
+        INSERT INTO
+        tb_product_search_word(prdt_code, srch_seq, srch_word)
+        VALUES
+        (#{prdtCode}, #{srchSeq}, #{srchWord})
+    </insert>
+    
+</mapper>

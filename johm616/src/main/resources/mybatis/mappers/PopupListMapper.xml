@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Popup">
+
+    <sql id="selectPopList">
+        popup_seq
+        , disp_yn
+        , layer_popup_yn
+        , popup_size_x
+        , popup_size_y
+        , coky_use_yn
+        , popup_name
+        , rgst_dtm
+        , last_mod_dtm
+        , popup_cont
+        , disp_start_dtm
+        , disp_end_dtm
+        , last_mod_admin_id
+        , write_admin_id
+        , popup_pos_x
+        , popup_pos_y
+    </sql>
+    
+    <sql id="selectPopupListSearchCondition">
+        <where>
+            disp_yn = 'Y'
+            <if test="dispStartDtm != null and !''.equals(dispStartDtm)">
+                <![CDATA[AND disp_start_dtm >= to_date(#{dispStartDtm}, 'YYYY.MM.DD')]]>
+            </if>
+            <if test="dispEndDtm != null and !''.equals(dispEndDtm)">
+                <![CDATA[AND disp_end_dtm <= to_date(#{dispEndDtm}, 'YYYY.MM.DD')]]>
+            </if>
+            <if test="layerPopupYn != null and !''.equals(layerPopupYn)">
+                AND layer_popup_yn = #{layerPopupYn}
+            </if>
+            <if test="dispYn != null and !''.equals(dispYn)">
+                AND disp_yn = #{dispYn}
+            </if>
+            <if test="popupName != null and !''.equals(popupName)">
+                AND popup_name like '%' ||  #{popupName} || '%'
+            </if>            
+        </where>
+    </sql>
+
+    <select id="selectPopupList" parameterType="Popup" resultType="Popup">
+        /* PopupList.selectPopupList */
+        <include refid="Base.pageHeader"/>
+        SELECT <include refid="selectPopList"/> 
+          FROM tb_popup
+      <include refid="selectPopupListSearchCondition"/>
+      ORDER BY rgst_dtm desc
+        <include refid="Base.pageFooter"/>
+    </select>
+    
+    <select id="selectPopupListCount" parameterType="Popup" resultType="int">
+        /* PopupList.selectPopupListCount */
+        SELECT COUNT(*) 
+          FROM tb_popup
+      <include refid="selectPopupListSearchCondition"/>
+    </select>
+    
+    <select id="getOnePopupForm" parameterType="Popup" resultType="Popup">
+        /* PopupList.getOnePopupForm */
+        SELECT <include refid="selectPopList"/>
+          FROM tb_popup
+         WHERE popup_seq = ${popupSeq}
+           AND disp_yn = 'Y'
+    </select>
+    
+    <insert id="createOnePopup" parameterType="Popup">
+        /* PopupList.createPopupList */
+        INSERT INTO tb_popup (
+            popup_seq
+          , disp_yn
+          , layer_popup_yn
+          , popup_size_x
+          , popup_size_y
+          , coky_use_yn
+          , popup_name
+          , rgst_dtm
+          , last_mod_dtm
+          , popup_cont
+          , disp_start_dtm
+          , disp_end_dtm
+          , last_mod_admin_id
+          , write_admin_id
+          , popup_pos_x
+          , popup_pos_y
+        ) VALUES (
+            POPUP_SEQ.NEXTVAL
+          , #{dispYn}
+          , #{layerPopupYn}
+          , #{popupSizeX}
+          , #{popupSizeY}
+          , #{cokyUseYn}
+          , #{popupName}
+          , TO_DATE(#{rgstDtm}, 'yyyy-MM-dd HH24:mi:ss')
+          , TO_DATE(#{lastModDtm}, 'yyyy-MM-dd HH24:mi:ss')
+          , #{popupCont}
+          , TO_DATE(#{dispStartDtm}, 'yyyy-MM-dd HH24:mi:ss')
+          , TO_DATE(#{dispEndDtm}, 'yyyy-MM-dd HH24:mi:ss')
+          , 'skyshop'
+          , 'skyshop'
+          , #{popupPosX}
+          , #{popupPosY}
+        )
+    </insert>
+    
+    <update id="updateOnePopup" parameterType="Popup">
+        /* PopupList.updatePopupList */
+        UPDATE tb_popup
+           SET disp_yn           = #{dispYn},
+               layer_popup_yn    = #{layerPopupYn},
+               popup_size_x      = #{popupSizeX},
+               popup_size_y      = #{popupSizeY},
+               coky_use_yn       = #{cokyUseYn},
+               popup_name        = #{popupName},
+               last_mod_dtm      = TO_DATE(#{lastModDtm}, 'yyyy-MM-dd HH24:mi:ss'),
+               popup_cont        = #{popupCont},
+               disp_start_dtm    = TO_DATE(#{dispStartDtm}, 'yyyy-MM-dd HH24:mi:ss'),
+               disp_end_dtm      = TO_DATE(#{dispEndDtm}, 'yyyy-MM-dd HH24:mi:ss'),
+               last_mod_admin_id = 'skyshop',
+               popup_pos_x       = #{popupPosX},
+               popup_pos_y       = #{popupPosY}
+         WHERE popup_seq = #{popupSeq}
+    </update>
+    
+    <update id="deleteOnePopup" parameterType="Popup">
+        /* PopupList.deleteOnePopup */
+        UPDATE tb_popup
+           SET disp_yn = 'N'
+         WHERE popup_seq = #{popupSeq}
+    </update>
+</mapper>

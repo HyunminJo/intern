@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Option">
+
+    <insert id="insertPrdtOptionMaster"
+        parameterType="ProductOptionMaster">
+        /*Option.insertProductOptionMaster*/
+        INSERT INTO
+        tb_product_option_master(prdt_code,optn_mstr_id,optn_mstr_name,optn_mstr_order)
+        values(#{prdtCode}, #{optnMstrId}, #{optnMstrName},
+        #{optnMstrOrder})
+    </insert>
+    
+    <insert id="insertPrdtOptionDetail"
+        parameterType="ProductOptionDetail">
+        /*Option.insertProductOptionDetail*/
+        INSERT INTO
+        tb_product_option_detail(prdt_code,optn_mstr_id,optn_id,optn_value,optn_order,optn_amt)
+        values(#{prdtCode}, #{optnMstrId}, #{optnId}, #{optnValue},
+        #{optnOrder}, #{optnAmt})
+    </insert>
+
+    <insert id="insertPrdtOptionStock"
+        parameterType="ProductOptionStock">
+        /*Option.insertProductOptionStock*/
+        INSERT INTO
+        tb_product_option_stock(prdt_code,stock_count,stock_seq,sell_count,disp_yn,del_yn)
+        values(#{prdtCode}, #{stockCount}, #{stockSeq}, #{sellCount},
+        #{dispYn}, #{delYn})
+    </insert>
+
+    <insert id="insertPrdtOptionSelect"
+        parameterType="ProductOptionSelect">
+        /*Option.insertProductOptionSelect*/
+        INSERT INTO tb_product_option_select(prdt_code, optn_mstr_id, optn_id,
+        stock_seq)
+        VALUES(#{prdtCode}, #{optnMstrId}, #{optnId}, #{stockSeq})
+    </insert>
+
+</mapper>

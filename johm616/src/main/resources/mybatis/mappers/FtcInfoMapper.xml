@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="FtcInfo">
+
+    <sql id="selectFtcInfo">
+        ftc_info_seq
+        , prnt_ftc_info_seq
+        , ftc_info_name
+        , use_yn
+        ,
+        rgst_dtm
+        , ftc_order
+        , admin_id
+    </sql>
+
+    <!-- 정보 고시정보 -->
+    <select id="getFtcInfoList" resultType="FtcInformation">
+        /*
+        FtcInfo.getFtcInfoList */
+        SELECT ftc_info_seq AS ftcInfoSeq
+        ,
+        ftc_info_name AS ftcInfoName
+        , prnt_ftc_info_seq AS
+        prntFtcInfoSeq
+        FROM tb_ftc_information
+        WHERE prnt_ftc_info_seq IS
+        NULL
+        AND use_yn ='Y'
+        ORDER BY ftc_info_seq ASC
+    </select>
+
+    <select id="getFtcInformationForPrdtCode"
+        resultType="FtcInformation">
+        /* FtcInfo.getFtcInformationForPrdtCode */
+        SELECT ftc_info_name
+        AS ftcInfoName
+        , prnt_ftc_info_seq AS prntFtcInfoSeq
+        ,
+        ftc_info_seq AS ftcInfoSeq
+        FROM tb_ftc_information
+        WHERE
+        prnt_ftc_info_seq=#{prntFtcInfoSeq}
+        <!-- AND use_yn='Y' -->
+        ORDER BY prnt_ftc_info_seq ASC
+    </select>
+
+</mapper>

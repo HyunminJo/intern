@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Vendor">
+
+    <sql id="selectVendorList">
+       c.vndr_cntrt_id
+       , v.vndr_id
+       , v.vndr_name
+       , c.cntrt_start_dt
+       , c.cntrt_end_dt
+       , c.vndr_cmsn_rate
+    </sql>
+
+    <!-- 업체 -->
+    <select id="getVendorList" resultType="Vendor">
+        SELECT <include refid="selectVendorList" />
+          FROM tb_vendor v
+          JOIN tb_vendor_contract c ON(v.vndr_id = c.vndr_id)
+            <![CDATA[WHERE SYSDATE > TO_DATE(cntrt_start_dt, 'YYYYMMDD') 
+                       AND SYSDATE < TO_DATE(cntrt_end_dt, 'YYYYMMDD') 
+                       AND v.vndr_join_stat_code='02']]>
+    </select>
+</mapper>

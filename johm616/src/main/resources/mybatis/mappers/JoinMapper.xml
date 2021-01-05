@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Join">
+
+    <sql id="selectUsersInfo">
+        user_no
+        , user_id
+        , user_pw
+        , user_group
+        , cus_cd
+        , black_consumer_yn
+        , user_stat
+        , last_login_dt
+        , last_pw_change_dt
+        , withdraw_desc
+        , memo
+        , hp
+        , reg_dt
+        , withdraw_dt
+        , mod_no
+        , mod_dt
+        , sms_yn
+        , mail_yn
+        , add_info_yn
+        , marketing_yn
+        , user_nm
+        , black_consumer_type
+        , refund_nm
+        , refund_vact_bankcode
+        , refund_num
+        , user_pw_init_yn
+        , update_type
+        , black_consumer_desc
+        , m_no_npc
+        , m_no_ibk
+        , wedding_yn
+        , wedding_dt
+        , mail_addr
+        , birth_dt
+        , solar_yn
+        , sex
+    </sql>
+    
+    <sql id="selectUsersSearchCondition">
+        <where>
+            <if test="userNm != null and !''.equals(userNm)">
+                And user_nm = #{userNm}
+            </if>
+            <if test="hp != null and !''.equals(hp)">
+                And hp = #{hp}
+            </if>
+        </where>
+    </sql>
+    
+    <!-- 가입여부 확인 -->
+    <select id="selectJoinUserInfo" parameterType="Users" resultType="Users">
+        /* Join.selectJoinUserInfo */
+        SELECT <include refid="selectUsersInfo"/>
+          FROM users
+        <include refid="selectUsersSearchCondition"/>
+    </select>
+    
+    <!-- 아이디 중복 여부 -->
+    <select id="selectUsersId" parameterType="Users" resultType="int">
+        /* Join.selectUsersId */
+        SELECT count(user_id)
+          FROM users
+         WHERE user_id = #{userId}
+    </select>
+    
+    <!-- 번호 중복 여부 -->
+    <select id="selectUsersHp" parameterType="Users" resultType="int">
+        /* Join.selectUsersHp */
+        SELECT count(hp)
+          FROM users
+         WHERE hp = #{hp}
+           AND user_nm = #{userNm}
+    </select>
+
+    <!-- codeGroup 조회 -->
+    <select id="selectCodeGroup" parameterType="Code" resultType="Code">
+        /* Join.selectCodeGroup */
+        SELECT code, name
+          FROM code
+         WHERE code_group = #{codeGroup}
+           AND use_yn = 'Y'
+      ORDER BY disp_no
+    </select>
+    
+    <!-- 유저번호 조회 -->
+    <select id="selectOneUserNo" resultType="String">
+        /* Join.selectOneUserNo */
+        SELECT user_seq.nextval user_no
+          FROM DUAL
+    </select>
+    <!-- 주소번호 조회 -->
+    <select id="selectOneAddrNo" resultType="String">
+        /* Join.selectOneAddrNo */
+        SELECT addr_seq.nextval addr_no
+          FROM DUAL
+    </select>
+    
+    <!-- insert Users -->
+    <insert id="insertUserInfo" parameterType="Users">
+        /* Join.insertUserInfo */
+        INSERT INTO users(user_no
+        , user_id
+        , user_pw
+        , user_group
+        , cus_cd
+        , user_stat
+        , last_pw_change_dt
+        , hp
+        , reg_dt
+        , mod_no
+        , mod_dt
+        , sms_yn
+        , mail_yn
+        , add_info_yn
+        , marketing_yn
+        , user_nm
+        , user_pw_init_yn
+        , update_type
+        , wedding_yn
+        , wedding_dt
+        , mail_addr
+        , birth_dt
+        , solar_yn
+        , sex)
+        VALUES(#{userNo}
+        , #{userId}
+        , #{userPw}
+        , #{userGroup}
+        , #{cusCd}
+        , #{userStat}
+        , #{lastPwChangeDt}
+        , #{hp}
+        , #{regDt}
+        , #{modNo}
+        , #{modDt}
+        , #{smsYn}
+        , #{mailYn}
+        , #{addInfoYn}
+        , #{marketingYn}
+        , #{userNm}
+        , 'N'
+        , #{updateType}
+        , #{weddingYn}
+        , #{weddingDt}
+        , #{mailAddr}
+        , #{birthDt}
+        , #{solarYn}
+        , #{sex}
+        )
+    </insert>
+    
+    <!-- insert Addr -->
+    <insert id="insertUserAddr" parameterType="Address">
+        /* Join.insertUserAddr */
+        INSERT INTO addr(addr_no
+        , user_no
+        , addr_nm
+        , recv_nm
+        , hp
+        , zipcode
+        , address
+        , address_detail
+        , default_yn
+        , reg_dt)
+        VALUES(addr_seq.nextval
+        , #{userNo}
+        , #{addrNm}
+        , #{recvNm}
+        , #{hp}
+        , #{zipcode}
+        , #{address}
+        , #{addressDetail}
+        , #{defaultYn}
+        , #{regDt})
+    </insert>
+    
+    <!-- insert user_code_map -->
+    <insert id="insertUserCodeMap" parameterType="UserCodeMap">
+        /* Join.insertUserCodeMap */
+        INSERT INTO user_code_map(user_no
+        , code_group
+        , code
+        , code_desc)
+        VALUES(#{userNo}
+        , #{codeGroup}
+        , #{code}
+        , #{codeDesc})
+    </insert>
+    
+    <select id="selectUsersList" parameterType="Users" resultType="Users">
+        /* Join.selectUsersList */
+         SELECT <include refid="selectUsersInfo"/>
+          FROM users
+    </select>
+</mapper>

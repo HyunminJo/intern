@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Category">
+
+    <sql id="selectProductCategory">
+        ctgr_Id
+        , prnt_Ctgr_Id
+        , ctgr_Name
+        , use_Yn
+        , disp_Order
+        , rgst_Dtm
+        , last_Mod_Admin_Id
+        , ctgr_Image_Url
+    </sql>
+    
+    <!-- 상품 분류정보(상위) -->
+    <select id="getCategoryParentList" resultType="Category">
+        /* Category.getCategoryParentList */
+        SELECT ctgr_id AS ctgrId
+             , prnt_ctgr_id AS prntCtgrId
+             , ctgr_name AS ctgrName
+             , disp_order AS dispOrder
+          FROM tb_category
+         WHERE prnt_ctgr_id = '00' 
+           AND use_yn='Y'
+         ORDER BY disp_order ASC
+    </select>
+    
+    <!-- 상품 분류(하위) -->
+    <select id="getClassityCategoryList" parameterType="Category"
+        resultType="Category">
+        /* Category.getClassityCategoryList */
+        SELECT
+        <include refid="selectProductCategory" />
+          FROM TB_CATEGORY
+         WHERE PRNT_CTGR_ID = #{prntCtgrId}
+    </select>
+
+</mapper>
