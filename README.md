@@ -54,7 +54,7 @@
 <img src="https://user-images.githubusercontent.com/66407414/103766829-dbd33080-5062-11eb-883e-56a5bbcf6073.gif" width="400%" height="300%" title="px(픽셀) 크기 설정" alt="deletePopup"></img>
 
 - popup 시퀀스 번호를 받아서 해당 popup의 전시 여부를 'N'으로 수정.
-
+---
 # 2. FAQ 게시판
 
 <img src="https://user-images.githubusercontent.com/66407414/103773438-653c3000-506e-11eb-8da5-8f7005df9ac2.gif" width="400%" height="300%" title="px(픽셀) 크기 설정" alt="faqList"></img>
@@ -64,3 +64,30 @@
 <img src="https://user-images.githubusercontent.com/66407414/103773000-bdbefd80-506d-11eb-831f-fe60d88c6172.gif" width="400%" height="300%" title="px(픽셀) 크기 설정" alt="faqList"></img>
 
 - 키워드 검색 시 입력한 값을 받아서 값이 포함된 결과를 산출,그 검색한 결과에 분류 선택 시 해당 분류에 검색 결과를 산출.
+---
+# 3. 상품 등록
+
+<img src="https://user-images.githubusercontent.com/66407414/103774715-5bb3c780-5070-11eb-8b82-78662a043615.gif" width="400%" height="300%" title="px(픽셀) 크기 설정" alt="insertProduct1"></img>
+
+- ajax를 사용하여 업체와 원산지 목록을 출력.
+- 팝업을 사용하여 브랜드 list 출력 후 브랜드 선택한 값을 callback 함수를 실행하여 브랜드 이름 출력.
+- 상단 아이콘과 하단 아이콘은 단 한 개씩만 출력.
+- ajax를 사용하여 상품의 분류 목록을 받아오고 받아 온 값을 다시 ajax를 사용하여 해당 값의 하위 목록을 출력.
+- 분류 정보 삭제 시 alert으로 꼭 하나는 존재하도록 구현.
+- 정상가와 판매가에 값이 없을 경우 alert으로 설정.
+
+<img src="https://user-images.githubusercontent.com/66407414/103774719-5ce4f480-5070-11eb-8036-84d13cd83350.gif" width="400%" height="300%" title="px(픽셀) 크기 설정" alt="insertProduct2"></img>
+
+- 옵션사용여부에서 사용으로 클릭 시 ajax를 통하여 버튼 속성 변경.
+- 옵션재고추가 버튼 클릭 시 옵션 분류명과 옵션명을 합쳐 옵션 갯수 만큼 조합, 추가금액은 합산.
+- 옵션사용여부에서 사용 시 재고추가 후의 사용여부 체크박스 칸이 값이 없을 경우 alert으로 설정.
+
+<img src="https://user-images.githubusercontent.com/66407414/103774720-5d7d8b00-5070-11eb-9153-9dacddf123c9.gif" width="400%" height="300%" title="px(픽셀) 크기 설정" alt="insertProduct3"></img>
+
+- 관련상품정보 있음으로 클릭 시 ajax를 사용하여 버튼 속성 변경.
+- 관련상품추가 버튼 클릭 시 팝업 창 띄우고 상품들을 list 형식으로 출력.
+- 상품을 검색할 수 있는 기능 추가.
+- 상품 체크 박스 클릭 후 입력 버튼 클릭 시 선택한 상품의 값을 callback 함수를 실행하여 ajax로 출력.
+- 정보고시정보 해당 분류 마다 ajax로 행 출력.
+- 대표 이미지 추가 시 상품 이미지정보의 첫 메인 화면에 출력.
+- 상품 상세정보는 위즈윅을 사용하여 구현.
