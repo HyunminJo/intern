@@ -37,3 +37,5 @@
 
 # 2. 팝업창 관리
 - 일반 게시판에서 응용하여 전시일자와 팝업 구분 전시여부를 검색조건에 포함하여 팝업창 관리하는 페이지를 구현.
+
+![popupList](https://user-images.githubusercontent.com/66407414/103748366-5a21d980-5047-11eb-9d54-763b60cb5fd0.gif)
