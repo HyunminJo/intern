@@ -8,7 +8,7 @@
 <table>
  <tr>
    <td><b>Development tools</b></td>
-   <td>STS</td>
+   <td>Spring Boot</td>
  </tr>
  <tr>
    <td><b>DBMS</b></td>
@@ -36,6 +36,25 @@
 
 
 # 2. 팝업창 관리
-- 일반 게시판에서 응용하여 전시일자와 팝업 구분 전시여부를 검색조건에 포함하여 팝업창 관리하는 페이지를 구현.
+<img src="https://user-images.githubusercontent.com/66407414/103749178-84c06200-5048-11eb-9f01-565ddd9ff9a1.gif" width="400%" height="300%" title="px(픽셀) 크기 설정" alt="popupList"></img>
 
-<img src="https://user-images.githubusercontent.com/66407414/103749178-84c06200-5048-11eb-9f01-565ddd9ff9a1.gif" width="400%" height="300%" title="px(픽셀) 크기 설정" alt="RubberDuck"></img>
+- 일반 게시판에서 응용하여 전시일자와 팝업 구분, 전시여부를 검색조건 구현.
+
+<img src="https://user-images.githubusercontent.com/66407414/103749886-6f980300-5049-11eb-9e52-a995a007eb8b.gif" width="400%" height="300%" title="px(픽셀) 크기 설정" alt="insertPopup"></img>
+
+- Mode가 'create' 일 경우 팝업 등록으로 이동.
+- 팝업이 열리는 일자와 팝업 위치, 크기, 팝업 구분 등 옵션을 추가한다.
+- 팝업 종료일자가 시작일자보다 빠르면 alert으로 알림.
+- 팝업 크기 입력 값이 없으면 alert으로 알림.
+- 팝업 시작점 입력 값이 없으면 alert으로 알림.
+- 팝업창명 입력 값이 없으면 alert으로 알림.
+- 내용 입력 값이 없으면 alert으로 알림.
+
+<img src="https://user-images.githubusercontent.com/66407414/103766534-52bbf980-5062-11eb-826c-5b9c01d2d3a7.gif" width="400%" height="300%" title="px(픽셀) 크기 설정" alt="insertPopup"></img>
+
+- Mode가 'update' 일 경우 팝업 수정.
+- 입력 값은 팝업 등록과 동일.
+
+<img src="https://user-images.githubusercontent.com/66407414/103766829-dbd33080-5062-11eb-883e-56a5bbcf6073.gif" width="400%" height="300%" title="px(픽셀) 크기 설정" alt="insertPopup"></img>
+
+- popup 시퀀스 번호를 받아서 해당 popup의 전시 여부를 'N'으로 수정.
