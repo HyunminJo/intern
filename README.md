@@ -91,3 +91,16 @@
 - 정보고시정보 해당 분류 마다 ajax로 행 출력.
 - 대표 이미지 추가 시 상품 이미지정보의 첫 메인 화면에 출력.
 - 상품 상세정보는 위즈윅을 사용하여 구현.
+---
+# 3. 회원가입
+
+<img src="https://user-images.githubusercontent.com/66407414/103774720-5d7d8b00-5070-11eb-9153-9dacddf123c9.gif" width="400%" height="300%" title="px(픽셀) 크기 설정" alt="addUser1"></img>
+
+- 이름과 핸드폰 번호를 조회하여 기존 회원인지 구분.
+- 개인정보 수집 및 이용 동의의 선택 정보와 마케팅 개인정보 활용 동의에 체크 시 회원정보 입력 페이지에서 표시, 미체크시 안보이게 구현.
+
+<img src="https://user-images.githubusercontent.com/66407414/103774720-5d7d8b00-5070-11eb-9153-9dacddf123c9.gif" width="400%" height="300%" title="px(픽셀) 크기 설정" alt="addUser2"></img>
+
+- 아이디 중복 체크 구현
+- 휴대폰 번호가 이미 기존 회원과 동일하면 가입 못하게 구현.
+
